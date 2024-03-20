@@ -5,10 +5,31 @@ import { catchError, switchMap } from 'rxjs/operators';
 import { AuthUtils } from 'app/core/auth/auth.utils';
 import { UserService } from 'app/core/user/user.service';
 
+export interface UserAuth {
+    succeeded: boolean;
+    message:   string;
+    user:      User;
+    token:     string;
+  }
+  
+  export interface User {
+    id:         number;
+    username:   string;
+    email:      string;
+    password:   string;
+    agreeTerms: boolean;
+  }
+  
+
+
+
 @Injectable()
 export class AuthService
 {
     private _authenticated: boolean = false;
+    private _userRole: number;
+
+    user: User;
 
     /**
      * Constructor
@@ -16,9 +37,20 @@ export class AuthService
     constructor(
         private _httpClient: HttpClient,
         private _userService: UserService
-    )
-    {
+    ) {
+        const storedToken = localStorage.getItem('accessToken');
+        if (storedToken) {
+            // If a token is found, set it in your service or wherever needed
+            this.accessToken = storedToken;
+            this._authenticated = true;
+        }
+
+        this.user = this.getUser(storedToken);
+
+        const authuser = this.getUser(storedToken);
+        // console.log(this.user);
     }
+
 
     // -----------------------------------------------------------------------------------------------------
     // @ Accessors
@@ -66,62 +98,97 @@ export class AuthService
      *
      * @param credentials
      */
-    signIn(credentials: { email: string; password: string }): Observable<any>
-    {
+    signIn(credentials: {
+        username: string;
+        password: string;
+    }): Observable<any> {
         // Throw error, if the user is already logged in
-        if ( this._authenticated )
-        {
+        if (this._authenticated) {
             return throwError('User is already logged in.');
         }
 
-        return this._httpClient.post('api/auth/sign-in', credentials).pipe(
-            switchMap((response: any) => {
+        return this._httpClient
+            .post('/api/login', credentials)
+            .pipe(
+                switchMap((response: any) => {
+                    // Store the access token in the local storage
+                    localStorage.setItem('accessToken', response.token);
+                    // Set the authenticated flag to true
 
-                // Store the access token in the local storage
-                this.accessToken = response.accessToken;
+                    console.log(response);
+                    this._authenticated = true;
+                    // Set the user role
+                    // console.log(response.user.roleID);
 
-                // Set the authenticated flag to true
-                this._authenticated = true;
+            
 
-                // Store the user on the user service
-                this._userService.user = response.user;
+                    this.user = this.getUser(response.token);
 
-                // Return a new observable with the response
-                return of(response);
-            })
-        );
+                    // console.log(this.user);
+
+                    // console.log(this._userRole);
+                    // this.userRole = response.user.roleID;
+                    // console.log(this.userRole);
+
+                    // console.log(response.user.roleID);
+
+            
+
+                    this.user = this.getUser(response.token)
+
+                    // console.log(this.user);
+
+                    // console.log(this._userRole);
+
+
+                    // this.isUserRole(response.user.roleID)
+                    // this._userService.get().subscribe((res)=>{
+                    //     console.log(res)
+                    // })
+
+
+                    return of(response);
+                })
+            );
+    }
+
+    private getUser(token: string): User | null {
+        if (!token) {
+            return null;
+        }
+        return JSON.parse(atob(token.split('.')[1])) as User;
     }
 
     /**
      * Sign in using the access token
      */
-    signInUsingToken(): Observable<any>
-    {
+    signInUsingToken(): Observable<any> {
         // Renew token
-        return this._httpClient.post('api/auth/refresh-access-token', {
-            accessToken: this.accessToken
-        }).pipe(
-            catchError(() =>
-
-                // Return false
-                of(false)
-            ),
-            switchMap((response: any) => {
-
-                // Store the access token in the local storage
-                this.accessToken = response.accessToken;
-
-                // Set the authenticated flag to true
-                this._authenticated = true;
-
-                // Store the user on the user service
-                this._userService.user = response.user;
-
-                // Return true
-                return of(true);
+        return this._httpClient
+            .post('api/auth/refresh-access-token', {
+                accessToken: this.accessToken,
             })
-        );
+            .pipe(
+                catchError(() =>
+                    // Return false
+                    of(false)
+                ),
+                switchMap((response: any) => {
+                    // Store the access token in the local storage
+                    this.accessToken = response.accessToken;
+
+                    // Set the authenticated flag to true
+                    this._authenticated = true;
+
+                    // Store the user on the user service
+                    this._userService.user = response.user;
+
+                    // Return true
+                    return of(true);
+                })
+            );
     }
+
 
     /**
      * Sign out

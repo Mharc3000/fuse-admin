@@ -4,6 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { fuseAnimations } from '@fuse/animations';
 import { FuseAlertType } from '@fuse/components/alert';
 import { AuthService } from 'app/core/auth/auth.service';
+import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 
 @Component({
     selector     : 'auth-sign-in',
@@ -19,8 +20,10 @@ export class AuthSignInComponent implements OnInit
         type   : 'success',
         message: ''
     };
+
     signInForm: FormGroup;
     showAlert: boolean = false;
+    isSmallScreen: boolean
 
     /**
      * Constructor
@@ -29,7 +32,9 @@ export class AuthSignInComponent implements OnInit
         private _activatedRoute: ActivatedRoute,
         private _authService: AuthService,
         private _formBuilder: FormBuilder,
-        private _router: Router
+        private _router: Router,
+        private breakpointObserver: BreakpointObserver
+
     )
     {
     }
@@ -45,10 +50,17 @@ export class AuthSignInComponent implements OnInit
     {
         // Create the form
         this.signInForm = this._formBuilder.group({
-            email     : ['hughes.brian@company.com', [Validators.required, Validators.email]],
-            password  : ['admin', Validators.required],
-            rememberMe: ['']
+
+            username     : ['', Validators.required],
+            password  : ['', Validators.required],
+
         });
+        this.isSmallScreen = this.breakpointObserver.isMatched(Breakpoints.XSmall);
+
+  this.breakpointObserver.observe([Breakpoints.XSmall])
+    .subscribe(result => {
+      this.isSmallScreen = result.matches;
+    });
     }
 
     // -----------------------------------------------------------------------------------------------------
@@ -75,22 +87,19 @@ export class AuthSignInComponent implements OnInit
         // Sign in
         this._authService.signIn(this.signInForm.value)
             .subscribe(
-                () => {
+                (res: any) => {
+                   // const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect'
+                  // Navigate to the redirect url
+                  this._router.navigate(['/home']);
+                //   this.saveUserCredentialToLocalStorage();
 
-                    // Set the redirect url.
-                    // The '/signed-in-redirect' is a dummy url to catch the request and redirect the user
-                    // to the correct page after a successful sign in. This way, that url can be set via
-                    // routing file and we don't have to touch here.
-                    const redirectURL = this._activatedRoute.snapshot.queryParamMap.get('redirectURL') || '/signed-in-redirect';
-
-                    // Navigate to the redirect url
-                    this._router.navigateByUrl(redirectURL);
 
                 },
                 (response) => {
 
                     // Re-enable the form
                     this.signInForm.enable();
+                    
 
                     // Reset the form
                     this.signInNgForm.resetForm();
@@ -98,7 +107,7 @@ export class AuthSignInComponent implements OnInit
                     // Set the alert
                     this.alert = {
                         type   : 'error',
-                        message: 'Wrong email or password'
+                        message: `${response.error.message}`
                     };
 
                     // Show the alert
@@ -106,4 +115,11 @@ export class AuthSignInComponent implements OnInit
                 }
             );
     }
+
+    // private saveUserCredentialToLocalStorage(): void {
+    //     localStorage.setItem(
+    //         'userCredentials',
+    //         JSON.stringify(this.signInForm.value)
+    //     );
+    // }
 }

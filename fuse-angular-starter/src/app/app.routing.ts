@@ -60,7 +60,7 @@ export const appRoutes: Route[] = [
             layout: 'empty'
         },
         children   : [
-            {path: 'home', loadChildren: () => import('app/modules/landing/home/home.module').then(m => m.LandingHomeModule)},
+         
         ]
     },
 
@@ -74,7 +74,10 @@ export const appRoutes: Route[] = [
             initialData: InitialDataResolver,
         },
         children   : [
+            
             {path: 'example', loadChildren: () => import('app/modules/admin/example/example.module').then(m => m.ExampleModule)},
+            {path: 'visitors', loadChildren: () => import('app/modules/visitor/visitortable/visitortable.module').then(m => m.VisitorTableModule)},
+            {path: 'home', loadChildren: () => import('app/modules/landing/home/home.module').then(m => m.LandingHomeModule)},
         ]
     }
 ];
