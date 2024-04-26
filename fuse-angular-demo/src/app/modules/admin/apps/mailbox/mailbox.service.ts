@@ -89,6 +89,7 @@ export class MailboxService
     /**
      * Getter for pagination
      */
+    
     get pagination$(): Observable<any>
     {
         return this._pagination.asObservable();

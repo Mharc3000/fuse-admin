@@ -1,40 +1,106 @@
+<div class="sm:absolute sm:inset-0 flex flex-col flex-auto min-w-0 sm:overflow-hidden bg-card dark:bg-transparent">
+  <div class="relative flex flex-col sm:flex-row flex-0 sm:items-center sm:justify-between py-8 px-6 md:px-8 border-b">
+    <!-- Loader -->
+    <mat-spinner *ngIf="isLoading" class="loader"></mat-spinner>
 
+    <!-- Title -->
+    <div class="text-4xl font-extrabold tracking-tight">Visitors</div>
+    <!-- Actions -->
+    <div class="flex flex-shrink-0 items-center mt-6 sm:mt-0 sm:ml-4">
+      <!-- Search -->
+      <mat-form-field class="fuse-mat-dense fuse-mat-no-subscript fuse-mat-rounded min-w-64">
+        <mat-icon class="icon-size-5" matPrefix [svgIcon]="'heroicons_solid:search'"></mat-icon>
+        <input matInput placeholder="Search..." (keyup)="applyFilter($event.target.value)">
+      </mat-form-field>
+      <!-- Add visitor button -->
+      <button class="ml-4" mat-flat-button [color]="'primary'" (click)="addvisitor()">
+        <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+        <span class="ml-2 mr-1">Add Visitor</span>
+      </button>
 
+      <button class="ml-4" mat-flat-button [color]="'primary'" (click)="appointvisitor()">
+        <mat-icon [svgIcon]="'heroicons_outline:plus'"></mat-icon>
+        <span class="ml-2 mr-1">Add Appoitment</span>
+      </button>
+    </div>
+  </div>
 
-<div class="mat-elevation-z8">
-  <table mat-table [dataSource]="dataSource">
+  <table mat-table [dataSource]="dataSource" class="mat-elevation-z8">
 
-    <!-- Position Column -->
-    <ng-container matColumnDef="position">
-      <th mat-header-cell *matHeaderCellDef> No. </th>
-      <td mat-cell *matCellDef="let element"> {{element.position}} </td>
+    <!-- Id Column -->
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef> ID </th>
+      <td mat-cell *matCellDef="let visitor"> {{ visitor.id }} </td>
     </ng-container>
 
-    <!-- Name Column -->
-    <ng-container matColumnDef="name">
-      <th mat-header-cell *matHeaderCellDef> Name </th>
-      <td mat-cell *matCellDef="let element"> {{element.name}} </td>
+    <!-- First Name Column -->
+    <ng-container matColumnDef="Full Name">
+      <th mat-header-cell *matHeaderCellDef> Full Name </th>
+      <td mat-cell *matCellDef="let visitor"> {{ visitor.fname }} {{ visitor.mname }}  {{ visitor.lname }} </td>
+    </ng-container>
+    <!-- Email Column -->
+    <ng-container matColumnDef="email">
+      <th mat-header-cell *matHeaderCellDef> Email </th>
+      <td mat-cell *matCellDef="let visitor"> {{ visitor.email }} </td>
     </ng-container>
 
-    <!-- Weight Column -->
-    <ng-container matColumnDef="weight">
-      <th mat-header-cell *matHeaderCellDef> Weight </th>
-      <td mat-cell *matCellDef="let element"> {{element.weight}} </td>
+    <!-- Purpose Column -->
+    <ng-container matColumnDef="purpose">
+      <th mat-header-cell *matHeaderCellDef> Purpose </th>
+      <td mat-cell *matCellDef="let visitor"> {{ visitor.purpose }} </td>
     </ng-container>
 
-    <!-- Symbol Column -->
-    <ng-container matColumnDef="symbol">
-      <th mat-header-cell *matHeaderCellDef> Symbol </th>
-      <td mat-cell *matCellDef="let element"> {{element.symbol}} </td>
+    <!-- Visitation Schedule Column -->
+    <ng-container matColumnDef="visitation_Sched">
+      <th mat-header-cell *matHeaderCellDef> Visitation Schedule </th>
+      <td mat-cell *matCellDef="let visitor"> {{ visitor.visitation_Sched | date: 'yyyy-MM-dd, h:mm a'  }} </td>
     </ng-container>
+
+    <!-- Check-In Date Column -->
+    <ng-container matColumnDef="checkInDate">
+      <th mat-header-cell *matHeaderCellDef> Check-In Date </th>
+      <td mat-cell *matCellDef="let visitor"> {{ visitor.checkInDate }} </td>
+    </ng-container>
+
+    <!-- Check-In Time Column -->
+    <ng-container matColumnDef="checkInTime">
+      <th mat-header-cell *matHeaderCellDef> Check-In Time </th>
+      <td mat-cell *matCellDef="let visitor"> {{ visitor.checkInTime }} </td>
+    </ng-container>
+
+    <!-- Check-Out Date Column -->
+    <ng-container matColumnDef="checkOutDate">
+      <th mat-header-cell *matHeaderCellDef> Check-Out Date </th>
+      <td mat-cell *matCellDef="let visitor"> {{ visitor.checkOutDate }} </td>
+    </ng-container>
+
+    <!-- Check-Out Time Column -->
+    <ng-container matColumnDef="checkOutTime">
+      <th mat-header-cell *matHeaderCellDef> Check-Out Time </th>
+      <td mat-cell *matCellDef="let visitor"> {{ visitor.checkOutTime }} </td>
+    </ng-container>
+
+    <ng-container matColumnDef="Actions">
+      <th mat-header-cell *matHeaderCellDef> Actions </th>
+      <td mat-cell *matCellDef="let visitor">
+        <button mat-icon-button [matMenuTriggerFor]="menu">
+          <mat-icon>more_vert</mat-icon>
+        </button>
+        <mat-menu #menu="matMenu">
+          <button  mat-menu-item (click)=" viewVisitor(visitor)">View</button>
+          <button mat-menu-item (click)="UpdateVisitor(visitor)">Edit</button>
+          <button  mat-menu-item (click)="CheckIn(visitor)">Check-In</button>
+          <button mat-menu-item (click)="CheckOut(visitor)">Check-Out</button>
+          <button mat-menu-item (click)="deleteVisitor(visitor)">Delete</button>
+        </mat-menu>
+      </td>
+    </ng-container>
+
+    
 
     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-    <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    <tr mat-row *matRowDef="let visitor; columns: displayedColumns;"></tr>
   </table>
 
-  <mat-paginator [pageSizeOptions]="[5, 10, 20]"
-                 showFirstLastButtons
-                 aria-label="Select page of periodic elements">
-  </mat-paginator>
+  <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
 </div>
-

@@ -4,17 +4,23 @@
   
   .mat-elevation-z8 table {
     width: 100%;
+    
   }
 
 
   .search-add-container {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end; /* Align to the right */
     margin-bottom: 20px; /* Adjust spacing as needed */
   }
   
   .search-add-container mat-form-field {
-    flex: 1;
-    margin-right: 10px; /* Adjust spacing as needed */
+    margin-right: 10px; /* Adjust spacing between form field and button */
+  }
+
+
+  
+  th.mat-sort-header-sorted {
+    color: black;
   }

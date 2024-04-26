@@ -1,0 +1,44 @@
+<div class="container mx-auto p-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="bg-gray-100 p-12 rounded-lg shadow-md">
+        <h3 class="text-3xl font-semibold leading-9 text-gray-900">User Information</h3>
+        <p class="mt-4 text-xl leading-7 text-gray-500">Personal details.</p>
+        
+        <div class="flex items-center justify-center mt-8">
+          <div class="w-40 h-40 bg-gray-300 rounded-full overflow-hidden flex items-center justify-center">
+            <img *ngIf="userInfo.userImgPath" [src]="userInfo.userImgPath" alt="User Image" class="w-full h-full object-cover">
+            <span *ngIf="!userInfo.userImgPath" class="text-gray-500 text-6xl">Placeholder</span>
+          </div>
+        </div>
+  
+        <div class="mt-8 border-t border-gray-200">
+          <dl class="divide-y divide-gray-200">
+            <!-- Full Name -->
+            <div class="py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-xl font-semibold leading-6 text-gray-900">Full Name</dt>
+              <dd class="mt-1 text-xl leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ userInfo.fname }} {{ userInfo.mname }} {{ userInfo.lname }}</dd>
+            </div>
+            <!-- Position -->
+            <div class="py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-xl font-semibold leading-6 text-gray-900">Position</dt>
+              <dd class="mt-1 text-xl leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ userInfo.position }}</dd>
+            </div>
+            <!-- Email Address -->
+            <div class="py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-xl font-semibold leading-6 text-gray-900">Email Address</dt>
+              <dd class="mt-1 text-xl leading-6 text-gray-700 sm:col-span-2 sm:mt-0">{{ userInfo.useraccount.email }}</dd>
+            </div>
+            <!-- Account Status -->
+            <div class="py-6 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-0">
+              <dt class="text-xl font-semibold leading-6 text-gray-900">Account Status</dt>
+              <dd class="mt-1 text-xl leading-6 text-gray-700 sm:col-span-2 sm:mt-0">
+                <span *ngIf="userInfo.isActive" class="text-green-600">Active</span>
+                <span *ngIf="!userInfo.isActive" class="text-red-600">Inactive</span>
+              </dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+  </div>
+  

@@ -25,20 +25,20 @@
             <div class="relative w-24 h-24">
                 <img
                     class="w-full h-full rounded-full"
-                    *ngIf="user.avatar"
-                    [src]="user.avatar"
+                    *ngIf="userInfo.userImgPath"
+                    [src]="userInfo.userImgPath"
                     alt="User avatar">
                 <mat-icon
                     class="icon-size-24"
-                    *ngIf="!user.avatar"
+                    *ngIf="!userInfo.userImgPath"
                     [svgIcon]="'heroicons_solid:user-circle'"></mat-icon>
             </div>
             <div class="flex flex-col items-center justify-center w-full mt-6">
                 <div class="w-full whitespace-nowrap overflow-ellipsis overflow-hidden text-center leading-normal font-medium">
-                    {{user.name}}
+                    {{userInfo.fname}} {{userInfo.lname}}
                 </div>
                 <div class="w-full mt-0.5 whitespace-nowrap overflow-ellipsis overflow-hidden text-center text-md leading-normal font-medium text-secondary">
-                    {{user.email}}
+                    {{userInfo.useraccount.email}}
                 </div>
             </div>
         </div>
@@ -68,7 +68,7 @@
         <div class="flex items-center pl-2 ml-auto space-x-0.5 sm:space-x-2">
             <!-- <languages></languages> -->
             <fuse-fullscreen class="hidden md:block"></fuse-fullscreen>
-            <!-- <search [appearance]="'bar'"></search> -->
+            <search [appearance]="'bar'"></search>
             <!-- <shortcuts></shortcuts>
             <messages></messages> -->
             <!-- <button

@@ -3,8 +3,9 @@ import { Router } from '@angular/router';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { User } from 'app/core/user/user.types';
+import { User, UserInfo } from 'app/core/user/user.types';
 import { UserService } from 'app/core/user/user.service';
+import { ClassyService } from 'app/layout/layouts/vertical/classy/classy.service';
 
 @Component({
     selector       : 'user',
@@ -21,6 +22,7 @@ export class UserComponent implements OnInit, OnDestroy
 
     @Input() showAvatar: boolean = true;
     user: User;
+    userInfo: UserInfo; 
 
     private _unsubscribeAll: Subject<any> = new Subject<any>();
 
@@ -30,7 +32,8 @@ export class UserComponent implements OnInit, OnDestroy
     constructor(
         private _changeDetectorRef: ChangeDetectorRef,
         private _router: Router,
-        private _userService: UserService
+        private _userService: UserService,
+        private _ClassyService: ClassyService,
     )
     {
     }
@@ -44,6 +47,7 @@ export class UserComponent implements OnInit, OnDestroy
      */
     ngOnInit(): void
     {
+        this.loadUserInfo(); 
         // Subscribe to user changes
         this._userService.user$
             .pipe(takeUntil(this._unsubscribeAll))
@@ -55,6 +59,18 @@ export class UserComponent implements OnInit, OnDestroy
             });
     }
 
+    loadUserInfo(): void {
+
+        this._ClassyService.getUserInfo()
+            .pipe(takeUntil(this._unsubscribeAll))
+            .subscribe((userInfo: UserInfo) => {
+                this.userInfo = userInfo;
+                console.log(this.userInfo)
+                // Assign the fetched user info to userInfo variable
+        });
+
+    
+    }
     /**
      * On destroy
      */

@@ -1,0 +1,139 @@
+<div class="flex flex-col max-w-240 md:min-w-200 max-h-screen -m-6">
+    <!-- Header -->
+
+    <div class="flex flex-0 items-center justify-between h-16 pr-3 sm:pr-5 pl-6 sm:pl-8 text-black">
+        <div class="text-lg font-medium">Update User Information</div>
+        <button mat-icon-button (click)="saveAndClose()" [tabIndex]="-1">
+            <mat-icon class="text-black" [svgIcon]="'heroicons_outline:x'"></mat-icon>
+        </button>
+    </div>
+
+
+
+    <ng-container>
+        <div class="flex justify-center items-center w-full h-full">
+            <div class="relative w-60 h-60">
+                <div class="absolute top-0 right-0 p-2">
+                    <button mat-icon-button (click)="removePreviewImage()" *ngIf="previewImageUrl">
+                        <mat-icon class="text-white" [svgIcon]="'heroicons_outline:trash'"></mat-icon>
+                    </button>
+                </div>
+                <div *ngIf="data?.userImgPath !== null; else showFileInput">
+                    
+                    <input
+                        #imageFileInput
+                        class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                        type="file"
+                        [multiple]="false"
+                        [accept]="'image/jpeg, image/png'"
+                        (change)="onFileSelected($event)"
+                    />
+                </div>
+                <ng-template #showFileInput>
+                    <label
+                        for="image-file-input"
+                        class="flex flex-col items-center justify-center w-full h-full border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:hover:bg-bray-800 dark:bg-gray-700 hover:bg-gray-100 dark:border-gray-600 dark:hover:border-gray-500 dark:hover:bg-gray-600"
+                        *ngIf="!selectedFile"
+                    >
+                        <div class="flex flex-col items-center justify-center pt-2 pb-3">
+                            <svg
+                                class="w-6 h-6 mb-2 text-gray-500 dark:text-gray-400"
+                                aria-hidden="true"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 20 16"
+                            >
+                                <path
+                                    stroke="currentColor"
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"
+                                ></path>
+                            </svg>
+                            <p class="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                                <span class="font-semibold">Click to upload user photo</span>
+                            </p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">SVG, PNG, JPG or GIF (MAX. 800x400px)</p>
+                        </div>
+                    </label>
+                </ng-template>
+                <img
+                    *ngIf="(data?.userImgPath || previewImageUrl) && !selectedFile"
+                    class="w-full h-full object-cover"
+                    [src]="data?.userImgPath || previewImageUrl"
+                    alt="user-photo-preview"
+                    (click)="imageFileInput.click()"
+                />
+
+                <img
+                    *ngIf="selectedFile"
+                    class="w-full h-full object-cover"
+                    [src]="previewImageUrl"
+                    alt="selected-photo-preview"
+                />
+
+            </div>
+        </div>
+    </ng-container>
+    
+      
+
+
+    <!-- Compose form -->
+    <form class="flex flex-col mt-2 p-8 pb-4 bg-card rounded-2xl shadow overflow-y-auto" [formGroup]="userForm">
+        <!-- First Name, Middle Name, Last Name -->
+     
+
+        <!-- Email, Purpose -->
+        <div class="flex flex-col gt-md:flex-row">
+            <mat-form-field class="flex-auto gt-md:pr-3">
+                <mat-label>First Name</mat-label>
+                <input matInput formControlName="fname" [value]="data?.fname">
+                <mat-icon class="icon-size-5" matSuffix [svgIcon]="'heroicons_solid:location-marker'"></mat-icon>
+            </mat-form-field>
+            <mat-form-field class="flex-auto gt-md:pl-3">
+                <mat-label>Middle Name</mat-label>
+                <input matInput formControlName="mname" [value]="data?.mname">
+                <mat-icon class="icon-size-5" matSuffix [svgIcon]="'heroicons_solid:location-marker'"></mat-icon>
+            </mat-form-field>
+            <mat-form-field class="flex-auto gt-md:pl-3">
+                <mat-label>Last Name</mat-label>
+                <input matInput formControlName="lname" [value]="data?.lname">
+                <mat-icon class="icon-size-5" matSuffix [svgIcon]="'heroicons_solid:location-marker'"></mat-icon>
+            </mat-form-field>
+            <mat-form-field class="flex-auto gt-md:pl-3">
+                <mat-label>Position</mat-label>
+                <input matInput formControlName="position" [value]="data?.position">
+                <mat-icon class="icon-size-5" matSuffix [svgIcon]="'heroicons_solid:location-marker'"></mat-icon>
+            </mat-form-field>
+        </div>
+
+        <!-- Actions -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between mt-4 sm:mt-6">
+            <div class="-ml-2"></div>
+            <div class="flex items-center mt-4 sm:mt-0">
+                <button class="order-first sm:order-last" mat-flat-button [color]="'primary'" (click)="UpdateUserInfo()">Update User</button>
+            </div>
+        </div>
+        
+    </form>
+
+    <div class="flex items-center justify-between mt-4">
+        <div class="flex items-center space-x-2">
+            <div>
+                <input
+                    id="image-file-input"
+                    class="absolute h-0 w-0 opacity-0 invisible pointer-events-none"
+                    type="file"
+                    [multiple]="false"
+                    [accept]="'image/jpeg, image/png'"
+                    (change)="onFileSelected($event)"
+                    #imageFileInput
+                />
+              
+            </div>
+        </div>
+    </div>
+
+</div>
